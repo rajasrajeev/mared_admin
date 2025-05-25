@@ -1,0 +1,3 @@
+/**
+ * Snackbar
+ */.snackbar {	margin-bottom: 0;	padding: 1.25rem;	font-size: 0.75rem;	border-radius: 0.625rem;}.snackbar-inner {	display: flex;	flex-wrap: wrap;	justify-content: space-between;	align-items: center;	margin-bottom: -10px;	margin-left: -10px;}.snackbar-inner:empty {	margin-bottom: 0;	margin-left: 0;}.snackbar-inner > * {	margin-top: 0;	margin-bottom: 10px;	margin-left: 10px;}.snackbar-title {	font-weight: 700;}.snackbar-icon {	margin-right: .7em;	vertical-align: middle;}.snackbar-primary {	background-color: #cdf6f4;	color: #04d2c8;}.snackbar + .snackbar {	margin-top: 1.875rem;}@media (min-width: 992px) {	.snackbar {		padding: 1.0625rem 1.25rem;	}}
