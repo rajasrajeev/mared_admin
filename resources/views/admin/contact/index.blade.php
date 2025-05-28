@@ -53,10 +53,24 @@
                     <div class="row print-d-none mb-3 mt-3 row-gap-3">
                         <div class="col-md-6 pt-2 pt-md-0">
                             <div class="custom-dropdown">
-                                <!-- <button class="dropdown-header btn ol-btn-light">
-                                    {{ get_phrase('Export') }}
-                                    <i class="fi-rr-file-export ms-2"></i>
-                                </button> -->
+                                <div class="custom-dropdown">
+                                    <button class="dropdown-header btn ol-btn-light">
+                                        {{ get_phrase('Export') }}
+                                        <i class="fi-rr-file-export ms-2"></i>
+                                    </button>
+                                    <ul class="dropdown-list">
+                                        <li>
+                                            <a class="dropdown-item" href="#" onclick="downloadPDF('.user-hierarchy-section', 'user-groups-hierarchy')">
+                                                <i class="fi-rr-file-pdf"></i> {{ get_phrase('PDF') }}
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" href="#" onclick="window.print();">
+                                                <i class="fi-rr-print"></i> {{ get_phrase('Print') }}
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div> 
                                 <ul class="dropdown-list">
                                     <li>
                                         <a class="dropdown-item" href="#" onclick="downloadPDF('.print-table', 'user-hierarchy')">
@@ -92,6 +106,7 @@
                     </div>
 
                     <!-- User Hierarchy Accordion -->
+                    <div class="user-hierarchy-section">
                     <div class="accordion" id="userHierarchyAccordion">
                         @php
                             // Get all supervisors (created by admin)
@@ -226,6 +241,7 @@
                                 {{ get_phrase('No supervisors found in the system') }}
                             </div>
                         @endif
+                    </div>
                     </div>
                     <!-- End User Hierarchy Accordion -->
 
