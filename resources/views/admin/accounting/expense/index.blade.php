@@ -77,6 +77,28 @@
             </div>
         </form>
 
+        <div class="d-flex justify-content-end mb-3">
+    <div class="custom-dropdown">
+        <button class="dropdown-header btn ol-btn-light">
+            {{ get_phrase('Export') }}
+            <i class="fi-rr-file-export ms-2"></i>
+        </button>
+        <ul class="dropdown-list">
+            <li>
+                <a class="dropdown-item" href="#" onclick="downloadPDF('.eTable', 'expense-list')">
+                    <i class="fi-rr-file-pdf"></i> {{ get_phrase('PDF') }}
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item" href="#" onclick="window.print();">
+                    <i class="fi-rr-print"></i> {{ get_phrase('Print') }}
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+
         <table class="table eTable eTable-2">
             <thead>
                 <tr>

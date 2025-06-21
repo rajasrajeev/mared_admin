@@ -15,16 +15,34 @@
                 <i class="fi-rr-wallet me-2"></i>
                 {{ get_phrase('Income Records') }}
             </h4>
-            <!-- <a href="#" class="btn ol-btn-outline-secondary d-flex align-items-center cg-10px">
-                <span class="fi-rr-plus"></span>
-                <span>{{ get_phrase('Add New Income') }}</span>
-            </a> -->
         </div>
     </div>
 </div>
 
 <div class="ol-card p-4">
     <div class="ol-card-body">
+
+            <div class="col-md-6 pt-2 pt-md-0">
+                <div class="custom-dropdown">
+                    <button class="dropdown-header btn ol-btn-light">
+                        {{ get_phrase('Export') }}
+                        <i class="fi-rr-file-export ms-2"></i>
+                    </button>
+                    <ul class="dropdown-list">
+                        <li>
+                            <a class="dropdown-item" href="#" onclick="downloadPDF('.eTable', 'income-list')">
+                                <i class="fi-rr-file-pdf"></i> {{ get_phrase('PDF') }}
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="#" onclick="window.print();">
+                                <i class="fi-rr-print"></i> {{ get_phrase('Print') }}
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
         <form method="GET" action="{{ route('admin.accounting.income.index') }}">
             <div class="d-flex mb-3">
                 <input type="text" name="search" class="form-control ol-form-control" placeholder="{{ get_phrase('Search by student name or agent name') }}" value="{{ request('search') }}">
