@@ -1178,5 +1178,42 @@ class UsersController extends Controller
 
         return redirect()->route('admin.users.manage')->with('success', 'User deleted successfully!');
     }
+
+    public function quick_store(Request $request)
+{
+    $validated = $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|string|email|unique:users,email',
+        'password' => 'required|string|min:6',
+        'phone' => 'nullable|string|max:20',
+    ]);
+
+    try {
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'phone' => $request->phone,
+            'role' => 'student',
+            'role_id' => Role::where('name', 'student')->first()->id,
+            'status' => 1
+        ]);
+
+        // Create student details
+        StudentDetails::create([
+            'user_id' => $user->id
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'student' => $user
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Error creating student: ' . $e->getMessage()
+        ], 500);
+    }
+}
 }
 

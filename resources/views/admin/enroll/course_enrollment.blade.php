@@ -49,6 +49,10 @@
                     <i class="fi-rr-settings-sliders me-2"></i>
                     {{ get_phrase('Enroll Students') }}
                 </h4>
+                <a href="{{ route('admin.student.create') }}" class="btn ol-btn-outline-secondary d-flex align-items-center cg-10px">
+                    <span class="fi-rr-plus"></span>
+                    <span>{{ get_phrase('Sign Up New Student') }}</span>
+                </a>
             </div>
         </div>
     </div>
@@ -64,13 +68,48 @@
                         <div class="form-section">
                             <h5 class="form-section-title">{{ get_phrase('Student Selection') }}</h5>
                             <div class="fpb-7 mb-3">
-                                <label class="form-label ol-form-label" for="multiple_user_id">{{ get_phrase('Students') }}<span class="required text-danger">*</span>
-                                </label>
+                                <label class="form-label ol-form-label" for="multiple_user_id">{{ get_phrase('Students') }}<span class="required text-danger">*</span></label>
                                 <select class="ol-select2 select2-hidden-accessible" name="user_id" required>
                                     @foreach ($students as $student)
                                         <option value="{{$student->id}}">{{$student->name}} ({{$student->email}})</option>
                                     @endforeach
                                 </select>
+                            </div>
+                            
+                            <!-- Add Quick Sign Up Form -->
+                            <div class="mt-4">
+                                <h6 class="form-section-title">{{ get_phrase('Quick Sign Up') }}</h6>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="new_student_name" class="form-label">{{ get_phrase('Name') }}<span class="required text-danger">*</span></label>
+                                            <input type="text" class="form-control" id="new_student_name" name="new_student_name">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="new_student_email" class="form-label">{{ get_phrase('Email') }}<span class="required text-danger">*</span></label>
+                                            <input type="email" class="form-control" id="new_student_email" name="new_student_email">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="new_student_password" class="form-label">{{ get_phrase('Password') }}<span class="required text-danger">*</span></label>
+                                            <input type="password" class="form-control" id="new_student_password" name="new_student_password">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="new_student_phone" class="form-label">{{ get_phrase('Phone') }}</label>
+                                            <input type="text" class="form-control" id="new_student_phone" name="new_student_phone">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mt-3">
+                                    <button type="button" class="btn ol-btn-primary" id="quick_signup_btn">{{ get_phrase('Quick Sign Up') }}</button>
+                                </div>
                             </div>
                         </div>
 
@@ -275,6 +314,51 @@
             if (courseType === 'full' || courseType === 'half') {
                 $('.subject-checkbox').prop('disabled', false);
             }
+        });
+
+        // Add Quick Sign Up functionality
+        $('#quick_signup_btn').on('click', function() {
+            let name = $('#new_student_name').val();
+            let email = $('#new_student_email').val();
+            let password = $('#new_student_password').val();
+            let phone = $('#new_student_phone').val();
+
+            if (!name || !email || !password) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            $.ajax({
+                url: '{{ route("admin.student.quick.store") }}',
+                type: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    name: name,
+                    email: email,
+                    password: password,
+                    phone: phone
+                },
+                success: function(response) {
+                    if (response.success) {
+                        // Add the new student to the select dropdown
+                        let newOption = new Option(response.student.name + ' (' + response.student.email + ')', response.student.id, true, true);
+                        $('.ol-select2').append(newOption).trigger('change');
+                        
+                        // Clear the form
+                        $('#new_student_name').val('');
+                        $('#new_student_email').val('');
+                        $('#new_student_password').val('');
+                        $('#new_student_phone').val('');
+                        
+                        alert('Student created successfully!');
+                    } else {
+                        alert(response.message || 'Error creating student');
+                    }
+                },
+                error: function(xhr) {
+                    alert(xhr.responseJSON?.message || 'Error creating student');
+                }
+            });
         });
     });
 </script>
