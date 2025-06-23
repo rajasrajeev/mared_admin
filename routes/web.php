@@ -3,6 +3,7 @@
 use App\Http\Controllers\CommonController;
 use App\Http\Controllers\InstallController;
 use App\Http\Controllers\ModalController;
+use App\Http\Controllers\CourseController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -64,3 +65,4 @@ Route::controller(InstallController::class)->group(function () {
     Route::get('install/success', 'success')->name('success');
 });
 //Installation routes
+Route::post('get-course-details', [CourseController::class, 'getCourseDetails'])->name('get.course.details');

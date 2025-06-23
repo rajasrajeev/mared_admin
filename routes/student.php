@@ -60,6 +60,7 @@ Route::middleware(['auth'])->group(function () {
         Route::any('cart', 'index')->name('cart');
         Route::get('cart/store/{id}', 'store')->name('cart.store');
         Route::get('cart/delete/{id}', 'delete')->name('cart.delete');
+        Route::get('/cart/checkout/{type}/{id?}', 'checkoutCourse')->name('cart.checkout.course');
     });
 
     // review routes

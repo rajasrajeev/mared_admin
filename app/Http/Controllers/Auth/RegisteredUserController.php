@@ -76,11 +76,12 @@ class RegisteredUserController extends Controller
                 'country' => $request->country,
                 'pincode' => $request->pincode,
                 'parent_email' => $request->parent_email,
-                /* 'class_id' => $request->class_id,
-                'course_type' => $request->course_type,
                 'subject_id' => is_array($request->subjects) && !empty($request->subjects) ? implode(',', $request->subjects) : "",
-                'entrolled_by' => $request->agent_id ?? null,
-                'amount' => $request->amount ?? 0, */
+                'amount' => $request->amount ?? 0,
+                'course_type' => $request->course_type,
+                 'class_id' => $request->class_id,
+                /*'entrolled_by' => $request->agent_id ?? null,
+                 */
                 'photo' => null
             ]);
 

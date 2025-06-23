@@ -18,7 +18,7 @@
               </div>
             </div>
           </div>
-          <div class="swiper-slide section-md" style="background-image: url('{{ asset('assets/frontend/new/images/image-07-1920x998.jpg') }}')"
+          <div class="swiper-slide section-md" style="background-image: url('{{ asset(get_frontend_settings('banner_image2')) }}')"
 >
             <div class="container">
               <div class="row justify-content-center">
@@ -29,7 +29,7 @@
               </div>
             </div>
           </div>
-          <div class="swiper-slide section-md" style="background-image: url('{{ asset('assets/frontend/new/images/image-17-1920x998.jpg') }}')"
+          <div class="swiper-slide section-md" style="background-image: url('{{ asset(get_frontend_settings('banner_image3')) }}')"
           >
             <div class="container">
               <div class="row justify-content-center">

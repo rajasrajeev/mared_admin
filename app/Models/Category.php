@@ -20,5 +20,8 @@ class Category extends Model
     public function courses() {
         return $this->hasMany(Course::class);
     }
+    public function courseTypePrice() {
+        return $this->belongsToMany(CourseTypePrice::class, 'course_type_price', 'class_id', 'course_type_price.id');
+    }
 
 }

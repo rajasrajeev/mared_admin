@@ -9,6 +9,7 @@ use App\Models\FileUploader;
 use App\Models\Payout;
 use App\Models\Permission;
 use App\Models\Setting;
+use App\Models\CartItem;
 use App\Models\User;
 use App\Models\Category;
 use App\Models\StudentDetails;
@@ -912,9 +913,14 @@ class UsersController extends Controller
     }
 
     public function student_enrol()
-    {
-        return view('admin.enroll.course_enrollment');
-    }
+{
+    $page_data['categories'] = Category::all();
+    $page_data['courses'] = Course::where('status', 'active')
+        ->orWhere('status', 'private')
+        ->orderBy('title', 'asc')
+        ->get();
+    return view('admin.enroll.course_enrollment', $page_data);
+}
     public function student_get(Request $request)
     {
 
@@ -928,42 +934,96 @@ class UsersController extends Controller
 
     public function student_post(Request $request)
     {
-        for ($i = 0; $i < count($request->user_id); $i++) {
-            for ($j = 0; $j < count($request->course_id); $j++) {
-                $data['user_id']    = $request->user_id[$i];
-                $data['course_id']  = $request->course_id[$j];
-                $data['entry_date'] = time();
-                $user               = Enrollment::where('user_id', $request->user_id[$i])->where('course_id', $request->course_id[$j])->exists();
-                if (!$user) {
+        // Validate the request
+        $validated = $request->validate([
+            'name' => 'required|max:255',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|min:6',
+            'phone' => 'required',
+            'class_id' => 'required',
+            'course_type' => 'required',
+            'subjects' => 'required_if:course_type,subject',
+            'amount' => 'required|numeric'
+        ]);
 
-                    Enrollment::insert($data);
-                }
+        // Create user
+        $userData = [
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'phone' => $request->phone,
+            'role' => 'student'
+        ];
+
+        $user = User::create($userData);
+
+        // Create student details
+        $studentDetails = [
+            'user_id' => $user->id,
+            'birth_date' => $request->birth_date,
+            'street' => $request->street,
+            'city' => $request->city,
+            'state' => $request->state,
+            'country' => $request->country,
+            'pincode' => $request->pincode,
+            'parent_email' => $request->parent_email,
+            'class_id' => $request->class_id,
+            'course_type' => $request->course_type,
+            'enrolled_by' => auth()->user()->id,
+            'subject_id' => is_array($request->subjects) && !empty($request->subjects) ? implode(',', $request->subjects) : "",
+                'amount' => $request->amount ?? 0
+        ];
+
+        StudentDetails::create($studentDetails);
+        $course = Course::where('category_id', $request->class_id)
+            ->where(function($query) use ($request) {
+                $query->whereRaw('FIND_IN_SET(?, course_type)', [$request->course_type]);
+            })->get();
+        if(!empty($course)){
+            foreach ($course as $c) {
+                CartItem::create([
+                    'user_id' => $user->id,
+                    'course_id' => $c->id
+                ]);
             }
         }
+        // Add to cart
+        // Assuming you have a Cart model
 
-        Session::flash('success', get_phrase('Student add successfully'));
+        Session::flash('success', get_phrase('Student registered and course added to cart successfully'));
         return redirect()->route('admin.enroll.history');
     }
 
     public function enroll_history(Request $request)
     {
         if ($request->eDateRange) {
-            $date                        = explode('-', $request->eDateRange);
-            $start_date                  = strtotime($date[0] . ' 00:00:00');
-            $end_date                    = strtotime($date[1] . ' 23:59:59');
-            $page_data['start_date']     = $start_date;
-            $page_data['end_date']       = $end_date;
-            $page_data['enroll_history'] = Enrollment::where('entry_date', '>=', $start_date)
-                ->where('entry_date', '<=', $end_date)
+            $date = explode('-', $request->eDateRange);
+            $start_date = strtotime($date[0] . ' 00:00:00');
+            $end_date = strtotime($date[1] . ' 23:59:59');
+            $page_data['start_date'] = $start_date;
+            $page_data['end_date'] = $end_date;
+            $page_data['enroll_history'] = Enrollment::join('student_details', 'enrollments.user_id', '=', 'student_details.user_id')
+            ->join('categories as category', 'student_details.class_id', '=', 'category.id')
+            ->join('users as agents', 'student_details.entrolled_by', '=', 'agents.id')
+            ->join('users as student', 'student_details.user_id', '=', 'student.id')
+            ->select('enrollments.*', 'agents.name as agent_name', 'student.name as student_name', 'student.email as email', 'student_details.course_type as course_type','category.title as category_title','student_details.amount as amount')
                 ->paginate(10)->appends($request->query());
         } else {
-            $start_date                  = strtotime('first day of this month ');
-            $end_date                    = strtotime('last day of this month');
-            $page_data['start_date']     = $start_date;
-            $page_data['end_date']       = $end_date;
-            $page_data['enroll_history'] = Enrollment::where('entry_date', '>=', $start_date)
-                ->where('entry_date', '<=', $end_date)->paginate(10);
+            $start_date = strtotime('first day of this month ');
+            $end_date = strtotime('last day of this month');
+            $page_data['start_date'] = $start_date;
+            $page_data['end_date'] = $end_date;
+            $page_data['enroll_history'] = Enrollment::
+                join('student_details', 'enrollments.user_id', '=', 'student_details.user_id')
+                ->join('categories as category', 'student_details.class_id', '=', 'category.id')
+                ->join('users as agents', 'student_details.entrolled_by', '=', 'agents.id')
+                ->join('users as student', 'student_details.user_id', '=', 'student.id')
+                ->select('enrollments.*', 'agents.name as agent_name', 'student.name as student_name', 'student.email as email', 'student_details.course_type as course_type','category.title as category_title','student_details.amount as amount')
+                ->paginate(10);
         }
+        // echo "<pre>";
+        // print_r($page_data['enroll_history']);
+        // die();
         return view('admin.enroll.enroll_history', $page_data);
     }
 
@@ -1113,6 +1173,7 @@ class UsersController extends Controller
 
         if($request->revenue != null) {
             $data['revenue'] = $request->revenue;
+            $data['revenue_type'] = $request->revenue_type;
         }
 
         if (isset($request->photo) && $request->hasFile('photo')) {
@@ -1149,6 +1210,7 @@ class UsersController extends Controller
 
         if($request->revenue != null) {
             $data['revenue'] = $request->revenue;
+            $data['revenue_type'] = $request->revenue_type;
         }
 
         if (isset($request->photo) && $request->hasFile('photo')) {

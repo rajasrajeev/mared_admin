@@ -607,4 +607,39 @@ class CourseController extends Controller
                 ->with('error', 'Failed to delete course type. ' . $e->getMessage());
         }
     }
+
+    public function getCourseDetails(Request $request)
+    {
+        $classId = $request->class_id;
+        $courseType = $request->course_type;
+        
+        // Get class with course type prices
+        $class = Category::find($classId);
+        
+        if ($courseType === 'subject') {
+            // Get subjects for the class
+            $subjects = Course::where('category_id', $classId)
+                ->where('status', 'active')
+                ->select('id', 'title', 'price')
+                ->get();
+                
+            return response()->json([
+                'subjects' => $subjects
+            ]);
+        } else {
+            // Get price from CourseTypePrice table
+            $courseTypePrice = CourseTypePrice::where([
+                'class_id' => $classId,
+                'course_type' => $courseType
+            ])->first();
+        
+            $price = $courseTypePrice ? $courseTypePrice->price : 0;
+            
+            return response()->json([
+                'price' => $price
+            ]);
+        }
+    }
 }
+
+

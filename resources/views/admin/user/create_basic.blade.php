@@ -71,15 +71,25 @@ $roles = $allowedRolesToCreate;
                 <input type="text" name="address" class="form-control ol-form-control" id="user-address">
             </div>
         </div>
-
+        <div class="row mb-3" id="revenue-type">
+            <label for="revenue_type" class="form-label ol-form-label col-sm-2 col-form-label">{{ get_phrase('Revenue Type') }}<span class="text-danger ms-1">*</span></label>
+            <div class="col-sm-8">
+                <select name="revenue_type" class="form-control ol-form-control" id="revenue_type">
+                    <option value="">{{ get_phrase('Select Revenue Type') }}</option>
+                    <option value="1">{{ get_phrase('Percentage') }}</option>
+                    <option value="2">{{ get_phrase('Fixed') }}</option>
+                </select>   
+                <!-- <input type="hidden" name="role" id="role-input"> -->
+            </div>
+        </div>
         <div class="row mb-3" id="revenue-row">
             <label for="revenue" class="form-label ol-form-label col-sm-2 col-form-label">{{ get_phrase('Revenue') }}</label>
             <div class="col-sm-8">
                 <div class="input-group">
                     <input type="number" name="revenue" id="revenue" class="form-control ol-form-control" onkeyup="calculateAdminRevenue(this.value)" min="0" max="100">
-                    <div class="input-group-append">
+                    <!-- <div class="input-group-append">
                         <span class="input-group-text ol-form-control">%</span>
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>
@@ -115,13 +125,16 @@ $roles = $allowedRolesToCreate;
         const roleName = selectedOption.dataset.role ? selectedOption.dataset.role.toLowerCase() : '';
 
         const revenueRow = document.getElementById('revenue-row');
+        const revenueTypeRow = document.getElementById('revenue-type');
         const teacherDetailsRow = document.getElementById('teacher-details-row');
         const teacherPdfRow = document.getElementById('teacher-pdf-row');
 
         if (roleName === 'teamleader' || roleName === 'supervisor' || roleName === 'agent') {
             revenueRow.style.display = 'flex';
+            revenueTypeRow.style.display = 'flex';
         } else {
             revenueRow.style.display = 'none';
+            revenueTypeRow.style.display = 'none';
         }
 
         if (roleName === 'teacher') {
@@ -135,6 +148,7 @@ $roles = $allowedRolesToCreate;
 
     document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('revenue-row').style.display = 'none';
+        document.getElementById('revenue-type').style.display = 'none';
         document.getElementById('teacher-details-row').style.display = 'none';
         document.getElementById('teacher-pdf-row').style.display = 'none';
         updateRoleName();

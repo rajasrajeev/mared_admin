@@ -68,65 +68,40 @@
                             </p>
                         </div>
                         <div class="table-responsive enroll_history overflow-auto" id="enroll_history">
+                            <!-- Add these columns to your table -->
                             <table class="table eTable eTable-2 print-table">
                                 <thead>
                                     <tr>
                                         <th scope="col">#</th>
-                                        <th scope="col">{{ get_phrase('Name') }}</th>
-                                        <th scope="col">Enrolled Class</th>
+                                        <th scope="col">{{ get_phrase('Student Name') }}</th>
+                                        <th scope="col">{{ get_phrase('Email') }}</th>
+                                        <th scope="col">{{ get_phrase('Enrolled Class') }}</th>
+                                        <th scope="col">{{ get_phrase('Course Type') }}</th>
+                                        <th scope="col">{{ get_phrase('Amount') }}</th>
+                                        <th scope="col">{{ get_phrase('Enrolled By') }}</th>
                                         <th scope="col">{{ get_phrase('Enrolled Date') }}</th>
-                                        <th scope="col">{{ get_phrase('Expiry Date') }}</th>
-                                        <th class="print-d-none" scope="col">{{ get_phrase('Option') }}</th>
+                                        <!-- <th class="print-d-none" scope="col">{{ get_phrase('Action') }}</th> -->
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach ($enroll_history as $key => $row)
                                         <tr>
-                                            <th scope="row">
-                                                <p class="row-number">{{ ++$key }}</p>
-                                            </th>
-                                            <td>
-                                                <div class="dAdmin_profile d-flex align-items-center min-w-200px">
-                                                    <div class="dAdmin_profile_img">
-                                                        <img class="img-fluid rounded-circle image-45" width="45" height="45" src="{{ get_image($row->photo) }}" />
-                                                    </div>
-                                                    <div class="ms-1">
-                                                        <h4 class="title fs-14px">{{ get_user_info($row->user_id)->name }}</h4>
-                                                        <p class="sub-title2 text-12px">{{ get_user_info($row->user_id)->email }}</p>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <div class="dAdmin_info_name min-w-250px">
-                                                    <p><a href="{{ route('admin.course.edit', $row->course_id) }}" target="_blank">{{ get_course_info($row->course_id)->title }}</a>
-                                                    </p>
-
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <div class="dAdmin_info_name min-w-250px">
-                                                    <p>{{ date('F d Y', $row->entry_date) }}</p>
-
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <div class="dAdmin_info_name min-w-250px">
-                                                    @if ($row->expiry_date)
-                                                        <p>{{ date('F d Y', strtotime($row->expiry_date)) }}</p>
-                                                    @else
-                                                        <p><span class="badge bg-success text-white">{{ get_phrase('Lifetime access') }}</span>
-                                                        </p>
-                                                    @endif
-                                                </div>
-                                            </td>
-                                            <td class="print-d-none">
+                                            <td>{{ $key + 1 }}</td>
+                                            <td>{{ $row->student_name }}</td>
+                                            <td>{{ $row->email }}</td>
+                                            <td>{{ $row->category_title }}</td>
+                                            <td>{{ ucfirst($row->course_type) }}</td>
+                                            <td>{{ $row->amount }}</td>
+                                            <td>{{ $row->agent_name }}</td>
+                                            <td>{{ date('d M Y', strtotime($row->created_at)) }}</td>
+                                            <!-- <td class="print-d-none">
                                                 <div class="adminTable-action">
-                                                    <button type="button" class="btn ol-btn-light ol-icon-btn" data-bs-toggle="tooltip" title="{{ get_phrase('Delete') }}"
-                                                        onclick="confirmModal('{{ route('admin.enroll.history.delete', $row->id) }}')">
+                                                    <button type="button" class="btn ol-btn-light ol-icon-btn" 
+                                                            onclick="confirmModal('{{ route('admin.enroll.history.delete', $row->id) }}')">
                                                         <i class="fi-rr-trash"></i>
                                                     </button>
                                                 </div>
-                                            </td>
+                                            </td> -->
                                         </tr>
                                     @endforeach
                                 </tbody>

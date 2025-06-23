@@ -15,6 +15,7 @@ class MyCoursesController extends Controller
     {
         // Get the authenticated user ID
         $userId = auth()->user()->id;
+        
 
         // Get the student's details with class_id and course_type
         $studentDetails = StudentDetails::where('user_id', $userId)->first();
@@ -22,6 +23,7 @@ class MyCoursesController extends Controller
         if (!$studentDetails) {
             // If no student details found, return an empty paginator
             $page_data['my_courses'] = new LengthAwarePaginator([], 0, 6);
+            
         } else {
             // Query courses based on the student's class_id and course_type
             $my_courses = Course::join('users', 'courses.user_id', '=', 'users.id')
@@ -59,7 +61,6 @@ class MyCoursesController extends Controller
             // The paginator is preserved, so no need to map or transform here
             $page_data['my_courses'] = $my_courses;
         }
-
         $view_path = 'frontend.' . get_frontend_settings('theme') . '.student.my_courses.index';
         return view($view_path, $page_data);
     }

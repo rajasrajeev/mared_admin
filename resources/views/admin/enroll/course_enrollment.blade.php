@@ -1,40 +1,4 @@
 @extends('layouts.admin')
-@push('title', get_phrase('Course enrollment'))
-@push('meta')@endpush
-@push('css')
-<style>
-    /* Form styling */
-    .form-section {
-        border: 1px solid #eaeaea;
-        border-radius: 10px;
-        padding: 20px;
-        margin-bottom: 20px;
-        background-color: #fbfbfb;
-    }
-
-    .form-section-title {
-        font-size: 18px;
-        font-weight: 600;
-        margin-bottom: 15px;
-        padding-bottom: 10px;
-        border-bottom: 1px solid #eee;
-        color: #444;
-    }
-
-    .form-check {
-        margin-bottom: 8px;
-        padding-left: 28px;
-    }
-
-    .form-check-input {
-        width: 18px;
-        height: 18px;
-        margin-left: -28px;
-        border-radius: 4px;
-        border: 1px solid #ccc;
-    }
-</style>
-@endpush
 @section('content')
     @php
         $courses = App\Models\Course::where('status', 'active')->orWhere('status', 'private')->orderBy('title', 'asc')->get();
@@ -75,7 +39,7 @@
                                     @endforeach
                                 </select>
                             </div>
-                            
+
                             <!-- Add Quick Sign Up Form -->
                             <div class="mt-4">
                                 <h6 class="form-section-title">{{ get_phrase('Quick Sign Up') }}</h6>
@@ -147,172 +111,184 @@
                                     <!-- Subjects will be dynamically inserted here -->
                                 </div>
                             </div>
-
-                            <div class="fpb-7 mb-3">
-                                <label class="form-label ol-form-label" for="amount">{{ get_phrase('Course Amount') }}</label>
-                                <input type="number" name="amount" id="amount" class="form-control" placeholder="{{ get_phrase('Course Amount') }}" readonly>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">{{ get_phrase('Email') }}<span class="required">*</span></label>
+                                    <input type="email" name="email" class="form-control" required>
+                                </div>
                             </div>
                         </div>
 
-                        <button type="submit" class="btn ol-btn-primary mt-3">{{ get_phrase('Enroll student') }}</button>
-                    </form>
-                </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">{{ get_phrase('Password') }}<span class="required">*</span></label>
+                                    <input type="password" name="password" class="form-control" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">{{ get_phrase('Phone') }}<span class="required">*</span></label>
+                                    <input type="text" name="phone" class="form-control" required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Address Information -->
+                    <div class="form-section">
+                        <h5 class="form-section-title">{{ get_phrase('Address Information') }}</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">{{ get_phrase('Street Address') }}</label>
+                                    <input type="text" name="street" class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">{{ get_phrase('City') }}</label>
+                                    <input type="text" name="city" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">{{ get_phrase('State') }}</label>
+                                    <input type="text" name="state" class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">{{ get_phrase('Country') }}</label>
+                                    <input type="text" name="country" class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">{{ get_phrase('Pincode') }}</label>
+                                    <input type="text" name="pincode" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Course Selection -->
+                    <div class="form-section">
+                        <h5 class="form-section-title">{{ get_phrase('Course Selection') }}</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">{{ get_phrase('Select Class') }}<span class="required">*</span></label>
+                                    <select name="class_id" id="class_id" class="form-control" required>
+                                        <option value="">{{ get_phrase('Select a Class') }}</option>
+                                        @foreach ($categories as $category)
+                                            <option value="{{ $category->id }}">{{ $category->title }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">{{ get_phrase('Course Type') }}<span class="required">*</span></label>
+                                    <select name="course_type" id="course_type" class="form-control" required>
+                                        <option value="">{{ get_phrase('Select Course Type') }}</option>
+                                        <option value="full">{{ get_phrase('Full Course') }}</option>
+                                        <option value="half">{{ get_phrase('Half Course') }}</option>
+                                        <option value="subject">{{ get_phrase('Subject Wise') }}</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="subjects_container" style="display: none;">
+                            <div class="mb-3">
+                                <label class="form-label">{{ get_phrase('Select Subjects') }}</label>
+                                <div id="subjects_list"></div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">{{ get_phrase('Course Amount') }}</label>
+                            <input type="number" name="amount" id="amount" class="form-control" readonly>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn ol-btn-primary">{{ get_phrase('Register & Add to Cart') }}</button>
+                </form>
             </div>
         </div>
     </div>
+</div>
+
 @endsection
 
 @push('js')
 <script>
-    $(document).ready(function() {
-        // Track selected subjects and their prices
-        let selectedSubjects = [];
-        let totalPrice = 0;
+$(document).ready(function() {
+    // Track selected subjects and their prices
+    let selectedSubjects = [];
+    let totalPrice = 0;
 
-        // When class is selected
-        $('#class_id').on('change', function() {
-            // Reset the course type when class changes
-            $('#course_type').val('');
-            $('#subjects_container').hide();
-            $('#amount').val('');
-            selectedSubjects = [];
-            totalPrice = 0;
-        });
+    // When class is selected
+    $('#class_id').on('change', function() {
+        // Reset the course type when class changes
+        $('#course_type').val('');
+        $('#subjects_container').hide();
+        $('#amount').val('');
+        selectedSubjects = [];
+        totalPrice = 0;
+    });
 
-        // When course type changes
-        $('#course_type').on('change', function() {
-            let courseType = $(this).val();
-            let classId = $('#class_id').val();
-            $('#amount').val('');
-            if (!classId) {
-                alert('Please select a class first');
-                $(this).val('');
-                return;
-            }
+    // When course type changes
+    $('#course_type').on('change', function() {
+        let courseType = $(this).val();
+        let classId = $('#class_id').val();
+        $('#amount').val('');
 
-            // Reset subjects and amount
-            selectedSubjects = [];
-            totalPrice = 0;
-
-            if (courseType === 'full' || courseType === 'half') {
-                // Fetch price from courseTypePrice table
-                fetchCourseTypePrice(classId, courseType);
-                // Use readonly instead of disabled for full/half courses
-                fetchSubjects(classId, courseType, true, true, true, true);
-            } else if (courseType === 'subject') {
-                // Show subject selection
-                fetchSubjects(classId, courseType, true, true, false, false);
-            } else {
-                $('#subjects_container').hide();
-                $('#amount').val('');
-            }
-        });
-
-        // Function to fetch course type price
-        function fetchCourseTypePrice(classId, courseType) {
-            $.ajax({
-                url: '{{ route("admin.courseType.price") }}',
-                type: 'GET',
-                data: {
-                    class_id: classId,
-                    course_type: courseType
-                },
-                success: function(response) {
-                    $('#amount').val(response.price);
-                },
-                error: function(xhr) {
-                    console.error("Error fetching course price:", xhr.responseText);
-                    $('#amount').val('');
-                }
-            });
+        if (!classId) {
+            alert('Please select a class first');
+            $(this).val('');
+            return;
         }
 
-        // Function to fetch subjects with prices
-        function fetchSubjects(classId, courseType, showCheckbox = false, multiSelect = false, autoSelect = false, disableSelect = false) {
-            $.ajax({
-                url: '{{ route("admin.courses.subjects", ["classId" => ":classId", "courseType" => ":courseType"]) }}'.replace(':classId', classId).replace(':courseType', courseType),
-                type: 'GET',
-                success: function(response) {
+        // Ajax call to get course details
+        $.ajax({
+            url: '{{ route("get.course.details") }}',
+            type: 'POST',
+            data: {
+                class_id: classId,
+                course_type: courseType,
+                _token: '{{ csrf_token() }}'
+            },
+            success: function(response) {
+                if (courseType === 'subject') {
                     $('#subjects_container').show();
-                    $('#subjects_list').html('');
+                    // Populate subjects
+                    let subjectsHtml = '';
+                    response.subjects.forEach(function(subject) {
+                        subjectsHtml += `
+                            <div class="form-check">
+                                <input class="form-check-input subject-checkbox" type="checkbox"
+                                    name="subjects[]" value="${subject.id}"
+                                    data-price="${subject.price}" id="subject_${subject.id}">
+                                <label class="form-check-label" for="subject_${subject.id}">
+                                    ${subject.title} - ${subject.price}
+                                </label>
+                            </div>`;
+                    });
+                    $('#subjects_list').html(subjectsHtml);
 
-                    if (response.subjects.length > 0) {
-                        response.subjects.forEach(subject => {
-                            // Display price if paid
-                            let priceDisplay = subject.is_paid ? ` - Price: ${subject.price}` : ' (Free)';
-                            let checkedAttribute = autoSelect ? 'checked' : '';
-
-                            // Important change: Use readonly instead of disabled for full/half courses
-                            // This ensures the values are submitted with the form
-                            let disabledAttribute = disableSelect ? 'readonly onclick="return false;"' : '';
-
-                            $('#subjects_list').append(`
-                                <div class="form-check">
-                                    <input class="form-check-input subject-checkbox"
-                                        type="checkbox"
-                                        name="subjects[]"
-                                        value="${subject.id}"
-                                        data-price="${subject.is_paid ? subject.price : 0}"
-                                        data-paid="${subject.is_paid}"
-                                        id="subject_${subject.id}" ${checkedAttribute} ${disabledAttribute}>
-                                    <label class="form-check-label" for="subject_${subject.id}">
-                                        ${subject.title}${priceDisplay}
-                                    </label>
-                                </div>
-                            `);
-                        });
-
-                        // Add event listeners to checkboxes
-                        $('.subject-checkbox').on('change', function() {
-                            updateTotalPrice();
-                        });
-
-                        // For full/half course, still calculate the total
-                        if (autoSelect) {
-                            updateTotalPrice();
-                        }
-                    } else {
-                        $('#subjects_list').html('<p class="text-muted">No subjects available.</p>');
-                    }
-                },
-                error: function(xhr) {
-                    console.error("Error fetching subjects:", xhr.responseText);
+                    // Handle subject selection
+                    $('.subject-checkbox').on('change', function() {
+                        calculateTotalAmount();
+                    });
+                } else {
+                    $('#subjects_container').hide();
+                    $('#amount').val(response.price);
                 }
-            });
-        }
-
-        // Function to update total price based on selected subjects
-        function updateTotalPrice() {
-            totalPrice = 0;
-            selectedSubjects = [];
-
-            $('.subject-checkbox:checked').each(function() {
-                let subjectId = $(this).val();
-                let price = parseFloat($(this).data('price')) || 0;
-
-                selectedSubjects.push({
-                    id: subjectId,
-                    price: price
-                });
-
-                totalPrice += price;
-            });
-
-            // Only update amount if we're in subject-wise mode
-            // For full/half course, amount comes from the courseTypePrice
-            if ($('#course_type').val() === 'subject') {
-                $('#amount').val(totalPrice);
-            }
-        }
-
-        // Add a hidden input for course type on form submit
-        $('form').on('submit', function() {
-            let courseType = $('#course_type').val();
-
-            // If it's full or half course, ensure all subject checkboxes are enabled
-            // so they will be included in the form submission
-            if (courseType === 'full' || courseType === 'half') {
-                $('.subject-checkbox').prop('disabled', false);
             }
         });
 
@@ -343,13 +319,13 @@
                         // Add the new student to the select dropdown
                         let newOption = new Option(response.student.name + ' (' + response.student.email + ')', response.student.id, true, true);
                         $('.ol-select2').append(newOption).trigger('change');
-                        
+
                         // Clear the form
                         $('#new_student_name').val('');
                         $('#new_student_email').val('');
                         $('#new_student_password').val('');
                         $('#new_student_phone').val('');
-                        
+
                         alert('Student created successfully!');
                     } else {
                         alert(response.message || 'Error creating student');
@@ -361,5 +337,19 @@
             });
         });
     });
+
+    // Calculate total amount for subject-wise selection
+    function calculateTotalAmount() {
+        totalPrice = 0;
+        selectedSubjects = [];
+
+        $('.subject-checkbox:checked').each(function() {
+            totalPrice += parseFloat($(this).data('price'));
+            selectedSubjects.push($(this).val());
+        });
+
+        $('#amount').val(totalPrice);
+    }
+});
 </script>
 @endpush

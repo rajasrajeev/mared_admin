@@ -44,7 +44,96 @@
             </div>
         </div>
     </div>
+    <div class="col-xl-4 col-lg-6">
+        <div class="ol-card p-4 ol-card p-4-2">
+            <div class="ol-card-body">
+                <div class="col-xl-12">
+                    <div class="row justify-content-center">
+                        <form action="{{ route('admin.website.settings.update') }}" method="post" enctype="multipart/form-data" class="text-center">
+                            @csrf
+                            <input type="hidden" name="type" value="banner_image">
+                            <div class="form-group mb-2">
+                                <div class="wrapper-image-preview  d-flex justify-content-center">
+                                    <div class="box">
+                                        <div class="upload-options">
+                                            @php
+                                                $banner2Data = json_decode(get_frontend_settings('banner_image2'));
+                                                $banner2active = get_frontend_settings('home_page');
 
+                                                if ($bannerData !== null && is_object($bannerData) && property_exists($banner2Data, $banner2active)) {
+                                                    $banner2 = json_decode(get_frontend_settings('banner_image2'))->$banner2active;
+                                                } elseif (!get_frontend_settings('home_page')) {
+                                                    $banner2 = get_frontend_settings('banner_image2');
+                                                }
+                                            @endphp
+                                            @if (isset($banner2))
+                                                <img src="{{ asset($banner2) }}" alt="">
+                                            @endif
+                                            <label for="banner_image2" class="btn ol-card p-4-text">
+
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path
+                                                        d="M18 6C17.39 6 16.83 5.65 16.55 5.11L15.83 3.66C15.37 2.75 14.17 2 13.15 2H10.86C9.83005 2 8.63005 2.75 8.17005 3.66L7.45005 5.11C7.17004 5.65 6.61005 6 6.00005 6C3.83005 6 2.11005 7.83 2.25005 9.99L2.77005 18.25C2.89005 20.31 4.00005 22 6.76005 22H17.24C20 22 21.1 20.31 21.23 18.25L21.75 9.99C21.89 7.83 20.17 6 18 6ZM10.5 7.25H13.5C13.91 7.25 14.25 7.59 14.25 8C14.25 8.41 13.91 8.75 13.5 8.75H10.5C10.09 8.75 9.75005 8.41 9.75005 8C9.75005 7.59 10.09 7.25 10.5 7.25ZM12 18.12C10.14 18.12 8.62005 16.61 8.62005 14.74C8.62005 12.87 10.13 11.36 12 11.36C13.87 11.36 15.38 12.87 15.38 14.74C15.38 16.61 13.86 18.12 12 18.12Z"
+                                                        fill="#797c8b" />
+                                                </svg>{{ get_phrase('Upload banner image 2') }}
+                                                <small class="d-block">(1000 X 700)</small> </label>
+                                            <input id="banner_image2" type="file" class="image-upload d-none" name="banner_image2" accept="image/*">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn ol-btn-primary w-100">{{ get_phrase('Upload banner image 2') }}</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-4 col-lg-6">
+        <div class="ol-card p-4 ol-card p-4-2">
+            <div class="ol-card-body">
+                <div class="col-xl-12">
+                    <div class="row justify-content-center">
+                        <form action="{{ route('admin.website.settings.update') }}" method="post" enctype="multipart/form-data" class="text-center">
+                            @csrf
+                            <input type="hidden" name="type" value="banner_image">
+                            <div class="form-group mb-2">
+                                <div class="wrapper-image-preview  d-flex justify-content-center">
+                                    <div class="box">
+                                        <div class="upload-options">
+                                            @php
+                                                $banner3Data = json_decode(get_frontend_settings('banner_image3'));
+                                                $banner3active = get_frontend_settings('home_page');
+
+                                                if ($bannerData !== null && is_object($banner3Data) && property_exists($banner3Data, $banner3active)) {
+                                                    $banner3 = json_decode(get_frontend_settings('banner_image3'))->$banner3active;
+                                                } elseif (!get_frontend_settings('home_page')) {
+                                                    $banner3 = get_frontend_settings('banner_image3');
+                                                }
+                                            @endphp
+                                            @if (isset($banner3))
+                                                <img src="{{ asset($banner3) }}" alt="">
+                                            @endif
+                                            <label for="banner_image3" class="btn ol-card p-4-text">
+
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path
+                                                        d="M18 6C17.39 6 16.83 5.65 16.55 5.11L15.83 3.66C15.37 2.75 14.17 2 13.15 2H10.86C9.83005 2 8.63005 2.75 8.17005 3.66L7.45005 5.11C7.17004 5.65 6.61005 6 6.00005 6C3.83005 6 2.11005 7.83 2.25005 9.99L2.77005 18.25C2.89005 20.31 4.00005 22 6.76005 22H17.24C20 22 21.1 20.31 21.23 18.25L21.75 9.99C21.89 7.83 20.17 6 18 6ZM10.5 7.25H13.5C13.91 7.25 14.25 7.59 14.25 8C14.25 8.41 13.91 8.75 13.5 8.75H10.5C10.09 8.75 9.75005 8.41 9.75005 8C9.75005 7.59 10.09 7.25 10.5 7.25ZM12 18.12C10.14 18.12 8.62005 16.61 8.62005 14.74C8.62005 12.87 10.13 11.36 12 11.36C13.87 11.36 15.38 12.87 15.38 14.74C15.38 16.61 13.86 18.12 12 18.12Z"
+                                                        fill="#797c8b" />
+                                                </svg>{{ get_phrase('Upload banner image 3') }}
+                                                <small class="d-block">(1000 X 700)</small> </label>
+                                            <input id="banner_image3" type="file" class="image-upload d-none" name="banner_image3" accept="image/*">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn ol-btn-primary w-100">{{ get_phrase('Upload banner image 3') }}</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div class="col-xl-4 col-lg-6">
         <div class="ol-card p-4 ol-card p-4-2">

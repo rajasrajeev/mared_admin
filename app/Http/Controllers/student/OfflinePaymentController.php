@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\CartItem;
 use App\Models\FileUploader;
 use App\Models\OfflinePayment;
+use App\Models\Payment_history;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
@@ -47,6 +48,11 @@ class OfflinePaymentController extends Controller
 
         // insert offline payment history
         OfflinePayment::insert($offline_payment);
+
+        $purchase_history = new Payment_history();
+        $purchase_history->user_id = auth()->user()->id;
+        $purchase_history->item_type = $request->item_type;
+        $purchase_history->items = json_encode($item_id_arr);
 
         // remove from cart
         if ($request->item_type == 'course') {

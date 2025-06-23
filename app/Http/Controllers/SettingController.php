@@ -50,7 +50,6 @@ class SettingController extends Controller
     public function website_settings_update(Request $request)
     {
         $data = $request->all();
-        array_shift($data);
         if ($request->type == 'frontend_settings') {
 
             foreach ($data as $key => $item) {
@@ -138,9 +137,45 @@ class SettingController extends Controller
                     $active_banner = array(
                         get_frontend_settings('home_page') => $data
                     );
-                    FrontendSetting::where('key', $request->type)->update(['value' => json_encode($active_banner)]);
+                    FrontendSetting::where('key', 'banner_image')->update(['value' => json_encode($active_banner)]);
                 } else {
-                    FrontendSetting::where('key', $request->type)->update(['value' => $data]);
+                    FrontendSetting::where('key', 'banner_image')->update(['value' => $data]);
+                }
+
+                Session::flash('success', get_phrase('Banner image update successfully'));
+            }
+            if (isset($request->banner_image2) && $request->banner_image2 != '') {
+
+                $banner = $request->banner_image2->extension();
+
+                $data = "uploads/banner_image/" . nice_file_name('banner_image2', $banner);
+                FileUploader::upload($request->banner_image2, $data);
+
+                if (get_frontend_settings('home_page')) {
+                    $active_banner = array(
+                        get_frontend_settings('home_page') => $data
+                    );
+                    FrontendSetting::where('key', 'banner_image2')->update(['value' => json_encode($active_banner)]);
+                } else {
+                    FrontendSetting::where('key', 'banner_image2')->update(['value' => $data]);
+                }
+
+                Session::flash('success', get_phrase('Banner image update successfully'));
+            }
+            if (isset($request->banner_image3) && $request->banner_image3 != '') {
+
+                $banner = $request->banner_image3->extension();
+
+                $data = "uploads/banner_image/" . nice_file_name('banner_image3', $banner);
+                FileUploader::upload($request->banner_image3, $data);
+
+                if (get_frontend_settings('home_page')) {
+                    $active_banner = array(
+                        get_frontend_settings('home_page') => $data
+                    );
+                    FrontendSetting::where('key', 'banner_image3')->update(['value' => json_encode($active_banner)]);
+                } else {
+                    FrontendSetting::where('key', 'banner_image3')->update(['value' => $data]);
                 }
 
                 Session::flash('success', get_phrase('Banner image update successfully'));

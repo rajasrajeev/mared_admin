@@ -545,74 +545,80 @@
                     </div>
 
                     <div class="row">
-                        @foreach ($my_courses->take(3) as $course)
-                            @php
-                                $course_progress = progress_bar($course->course_id);
+                        @php
+                            $student_details = \App\Models\StudentDetails::where('user_id', auth()->id())->first();
+                            $show_courses = $student_details && $student_details->paid && $student_details->is_verified;
+                        @endphp
 
-                                $watch_history = App\Models\Watch_history::where('course_id', $course->course_id)
-                                    ->where('student_id', auth()->user()->id)
-                                    ->first();
+                        @if($show_courses)
+                            @foreach ($my_courses as $course)
+                                @php
+                                    $course_progress = progress_bar($course->course_id);
 
-                                $lesson = App\Models\Lesson::where('course_id', $course->course_id)
-                                    ->orderBy('sort', 'asc')
-                                    ->first();
+                                    $watch_history = App\Models\Watch_history::where('course_id', $course->course_id)
+                                        ->where('student_id', auth()->user()->id)
+                                        ->first();
 
-                                if (!$watch_history && !$lesson) {
-                                    $url = route('course.player', ['slug' => $course->slug]);
-                                } else {
-                                    if ($watch_history) {
-                                        $lesson_id = $watch_history->watching_lesson_id;
-                                    } elseif ($lesson) {
-                                        $lesson_id = $lesson->id;
+                                    $lesson = App\Models\Lesson::where('course_id', $course->course_id)
+                                        ->orderBy('sort', 'asc')
+                                        ->first();
+
+                                    if (!$watch_history && !$lesson) {
+                                        $url = route('course.player', ['slug' => $course->slug]);
+                                    } else {
+                                        if ($watch_history) {
+                                            $lesson_id = $watch_history->watching_lesson_id;
+                                        } elseif ($lesson) {
+                                            $lesson_id = $lesson->id;
+                                        }
+                                        $url = route('course.player', ['slug' => $course->slug, 'id' => $lesson_id]);
                                     }
-                                    $url = route('course.player', ['slug' => $course->slug, 'id' => $lesson_id]);
-                                }
-                            @endphp
+                                @endphp
 
-                            <div class="col-lg-4 col-md-6 mb-4">
-                                <div class="card course-card">
-                                    <div class="card-head">
-                                        <img src="{{ get_image($course->thumbnail) }}" alt="course-thumbnail" class="img-fluid">
-                                        <div class="course-progress-badge" style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.6); color: white; padding: 5px 10px; border-radius: 20px; font-size: 12px;">
-                                            {{ $course_progress }}% {{ get_phrase('Complete') }}
+                                <div class="col-lg-4 col-md-6 mb-4">
+                                    <div class="card course-card">
+                                        <div class="card-head">
+                                            <img src="{{ get_image($course->thumbnail) }}" alt="course-thumbnail" class="img-fluid">
+                                            <div class="course-progress-badge" style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.6); color: white; padding: 5px 10px; border-radius: 20px; font-size: 12px;">
+                                                {{ $course_progress }}% {{ get_phrase('Complete') }}
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="d-flex align-items-center mb-3">
-                                            <img src="{{ get_image($course->user_photo) }}" alt="author-image" class="rounded-circle" style="width: 30px; height: 30px;">
-                                            <h6 class="ms-2 mb-0">{{ $course->user_name }}</h6>
-                                        </div>
+                                        <div class="card-body">
+                                            <div class="d-flex align-items-center mb-3">
+                                                <img src="{{ get_image($course->user_photo) }}" alt="author-image" class="rounded-circle" style="width: 30px; height: 30px;">
+                                                <h6 class="ms-2 mb-0">{{ $course->user_name }}</h6>
+                                            </div>
 
-                                        <div class="entry-title">
-                                            <a href="{{ route('course.details', $course->slug) }}">
-                                                <h5 class="w-100 ellipsis-line-2">{{ ucfirst($course->title) }}</h5>
+                                            <div class="entry-title">
+                                                <a href="{{ route('course.details', $course->slug) }}">
+                                                    <h5 class="w-100 ellipsis-line-2">{{ ucfirst($course->title) }}</h5>
+                                                </a>
+                                            </div>
+
+                                            <div class="progress mt-3" style="height: 5px;">
+                                                <div class="progress-bar" style="width: {{ $course_progress }}%"></div>
+                                            </div>
+
+                                            <a href="{{ $url }}" class="eBtn learn-btn w-100 text-center mt-3">
+                                                {{ $course_progress > 0 ? get_phrase('Continue') : get_phrase('Start Now') }}
                                             </a>
                                         </div>
-
-                                        <div class="progress mt-3" style="height: 5px;">
-                                            <div class="progress-bar" style="width: {{ $course_progress }}%"></div>
-                                        </div>
-
-                                        <a href="{{ $url }}" class="eBtn learn-btn w-100 text-center mt-3">
-                                            {{ $course_progress > 0 ? get_phrase('Continue') : get_phrase('Start Now') }}
-                                        </a>
                                     </div>
                                 </div>
-                            </div>
-                        @endforeach
-
-                        @if ($my_courses->count() == 0)
+                            @endforeach
+                        @else
                             <div class="col-12">
                                 <div class="bg-white radius-10 p-4 text-center">
-                                    @include('frontend.default.empty')
-                                    <a href="{{ route('my.courses') }}" class="eBtn mt-4">{{ get_phrase('Browse Courses') }}</a>
+                                    <img src="{{ asset('assets/frontend/default/image/empty_state.svg') }}" alt="Verification Pending" class="mb-3" width="150">
+                                    <h4>{{ get_phrase('Course Access Pending') }}</h4>
+                                    <p>{{ get_phrase('Your payment needs to be verified by admin before accessing the courses.') }}</p>
                                 </div>
                             </div>
                         @endif
                     </div>
                 </div>
 
-                <!-- Payment Status Section (for courses pending approval) -->
+                <!-- Payment Status Section -->
                 <div class="content-section">
                     <div class="section-header">
                         <h3 class="section-title">{{ get_phrase('Payment Status') }}</h3>
@@ -620,15 +626,19 @@
 
                     @php
                         $student_details = \App\Models\StudentDetails::where('user_id', auth()->id())->first();
-                        $pending_payments = [
-                            [
-                                'id' => 1,
+                        $pending_payments = [];
+                        
+                        if ($student_details) {
+                            $pending_payments[] = [
+                                'id' => $student_details->id,
                                 'course_title' => $student_details->course_type == 'full' ? 'Full Course' : ($student_details->course_type == 'subject' ? 'Subject Course' : 'Half Course'),
                                 'payment_date' => $student_details->created_at->format('d M, Y'),
                                 'amount' => $student_details->amount,
-                                'status' => $student_details->paid == 0 ? 'Not Paid' : 'Pending Approval'
-                            ]
-                        ];
+                                'status' => !$student_details->paid ? 'Not Paid' : (!$student_details->is_verified ? 'Pending Approval' : 'Verified'),
+                                'paid' => $student_details->paid,
+                                'is_verified' => $student_details->is_verified
+                            ];
+                        }
                     @endphp
 
                     @if(count($pending_payments) > 0)
@@ -640,6 +650,7 @@
                                         <th>{{ get_phrase('Date') }}</th>
                                         <th>{{ get_phrase('Amount') }}</th>
                                         <th>{{ get_phrase('Status') }}</th>
+                                        <th>{{ get_phrase('Action') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -648,7 +659,23 @@
                                             <td>{{ $payment['course_title'] }}</td>
                                             <td>{{ $payment['payment_date'] }}</td>
                                             <td>{{ $payment['amount'] }}</td>
-                                            <td><span class="badge bg-warning">{{ $payment['status'] }}</span></td>
+                                            <td>
+                                                @if($payment['is_verified'])
+                                                    <span class="badge bg-success">{{ $payment['status'] }}</span>
+                                                @elseif($payment['paid'])
+                                                    <span class="badge bg-warning">{{ $payment['status'] }}</span>
+                                                @else
+                                                    <span class="badge bg-danger">{{ $payment['status'] }}</span>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if(!$payment['paid'])
+                                                    <a href="{{ route('cart.checkout.course', ['type' => $student_details->course_type, 'id' => $student_details->class_id ?? '']) }}" 
+                                                       class="btn btn-primary btn-sm">
+                                                        {{ get_phrase('Checkout') }}
+                                                    </a>
+                                                @endif
+                                            </td>
                                         </tr>
                                     @endforeach
                                 </tbody>
